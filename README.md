@@ -1,13 +1,42 @@
 # ABOUT
 
-Amazon SimpleDB Adapter for ActiveRecord
+Amazon SimpleDB Adapter for ActiveRecord for Rails3
+
+# FEATURES
+
+- All data saves in one sdb domain (each activerecord model class detected by special reserved column 'collection')
+- Columns with numbers (integer and float) saves with special shift and constant size for correcting comparation in SELECT query.
 
 # USAGE
 
 install:
 
     gem install activerecord-simpledb-adapter
-    
+
+config/database.yml:
+
+	defaults: &defaults
+	  adapter: simpledb
+	  access_key_id: KEY
+	  secret_access_key: SECRET
+    development:
+	  <<: *defaults
+	  domain_name: domain_name
+
+model example:
+    Person < ActiveRecord::Base
+	  columns_definition do |t|
+	    t.string :login
+	    t.integer :year, :limit => 4
+	    t.boolean :active
+	    t.string :from, :to => 'from_property'
+	    t.float :price
+	    t.integer :lock_version
+
+	    t.timestamps
+	  end
+	end
+  
 # LICENSE
 
 (The MIT License)
