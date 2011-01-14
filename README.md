@@ -23,6 +23,10 @@ config/database.yml:
 	  <<: *defaults
 	  domain_name: domain_name
 
+for creating domain:
+    
+	rake db:create
+
 model example:
     Person < ActiveRecord::Base
 	  columns_definition do |t|
