@@ -40,7 +40,7 @@ module Arel
           o.cores.first.wheres << SqlLiteral.new("#{attr} IS NOT NULL")
         end
         collection = o.cores.first.froms.name
-        o.cores.first.wheres << SqlLiteral.new("#{@connection.collection_column_name(collection)} = #{quote(collection)}")
+        o.cores.first.wheres << SqlLiteral.new("`#{@connection.collection_column_name(collection)}` = #{quote(collection)}")
         o.cores.first.froms = Table.new @connection.domain_name
         super
       end
@@ -63,12 +63,14 @@ module Arel
       
       def visit_Arel_Nodes_Assignment o
         right = o.right ? hash_value_quote(o.right, o.left.column) : nil
-        {visit(o.left) => right}
+        left = o.left.column.name
+        {left => right}
       end
 
       def visit_Arel_Nodes_Equality o
         right = o.right ? hash_value_quote(o.right, o.left.column) : nil
-        {visit(o.left) => right}.tap { |m|
+        left = o.left.column.name
+        {left => right}.tap { |m|
           m.override_to_s "#{visit o.left} = #{quote(o.right, o.left.column)}"
         }
       end
@@ -92,8 +94,7 @@ module Arel
       def visit_Arel_Nodes_SqlLiteral o
         # Strip table name from table.column -like literals
         result = o.to_s.gsub(/\w+\.([\w*]+)/, '\1')
-        
-        if result.match /(\w+)\s*=\s*'(.*?)'/
+        if result.match /`(\w+)`\s*=\s*'(.*?)'/
           # transform 'a = b' to {'a' => 'b'}
           {$1 => $2}.tap {|m| m.override_to_s result}
         else

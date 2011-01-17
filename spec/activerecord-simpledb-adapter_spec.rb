@@ -138,4 +138,12 @@ describe "model with active_record_simple_db" do
     p = Person.where(:year => 2010).all
     p.should_not be_empty
   end
+
+  it "should be correct work with where statment with \"from\" column" do
+    p1 = Person.new
+    p1.from = 'test'
+    p1.save
+    p = Person.where(:from => 'test').all
+    p.should_not be_empty
+  end
 end

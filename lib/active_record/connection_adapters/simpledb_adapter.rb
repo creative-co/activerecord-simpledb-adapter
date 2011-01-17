@@ -128,7 +128,7 @@ module ActiveRecord
       def mount_sql_and_params(klass, table_name, attribute, value) #:nodoc:
         column = klass.columns_hash[attribute.to_s]
 
-        sql_attribute = "#{table_name}.#{klass.connection.quote_column_name(column.db_column_name)}"
+        sql_attribute = "#{klass.connection.quote_column_name(column.db_column_name)}"
         sql = "#{sql_attribute} = ?"
         if value.nil?
           [sql, [value]]
@@ -191,6 +191,8 @@ module ActiveRecord
       end
 
       def unquote_number value
+        return nil if value.nil?
+
         case sql_type
           when :integer then
             value.to_i - number_shift
@@ -274,6 +276,14 @@ module ActiveRecord
         else
           super
         end
+      end
+
+      def quote_column_name(column_name)
+        "`#{column_name}`"
+      end
+      
+      def quote_table_name(table_name)
+        table_name
       end
       #=======================================
 
@@ -398,7 +408,7 @@ module ActiveRecord
       end
 
       def get_collection_column_and_name sql
-        if sql.match /(#{@@ccn.values.join("|")})\s*=\s*'(.*?)'/
+        if sql.match /`?(#{@@ccn.values.join("|")})`?\s*=\s*'(.*?)'/
           $2
         else
           raise  PreparedStatementInvalid, "collection column '#{@@ccn.values.join(" or ")}' not found in the WHERE section in query"

@@ -38,7 +38,7 @@ class Person < ActiveRecord::Base
     t.string :login
     t.integer :year, :limit => 4
     t.boolean :active
-    t.string :state
+    t.string :from
     t.float :price
     t.integer :lock_version
 
@@ -51,7 +51,7 @@ class Person < ActiveRecord::Base
         :year => 2010,
         :active => true,
         :price => 10.04,
-        :state => 'paid'
+        :from => 'paid'
     }
   end
 end
