@@ -33,7 +33,7 @@ model example:
 	    t.string :login
 	    t.integer :year, :limit => 4
 	    t.boolean :active
-	    t.string :from, :to => 'from_property'
+	    t.string :from
 	    t.float :price
 	    t.integer :lock_version
 
