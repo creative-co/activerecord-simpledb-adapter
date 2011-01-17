@@ -58,6 +58,22 @@ class Aws::SdbInterface
 end
 
 module ActiveRecord
+
+  class SimpleDBLogger
+    def initialize(logger)
+      @logger = logger
+    end
+
+    def info *args
+      #skip noisy info messages from aws interface
+    end
+
+    def method_missing m, *args
+      @logger.send(m, args)
+    end
+
+  end
+
   class Base
     def self.simpledb_connection(config) # :nodoc:
       require 'aws'
@@ -72,7 +88,7 @@ module ActiveRecord
               :server => config[:host],
               :port => config[:port],
               :protocol => config[:protocol],
-              :logger => logger
+              :logger => SimpleDBLogger.new(logger)
           },
           config
     end
