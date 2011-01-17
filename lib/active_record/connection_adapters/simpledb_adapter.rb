@@ -318,8 +318,8 @@ module ActiveRecord
       end
 
       def execute sql, name = nil, skip_logging = false
-        p sql
-        case sql[:action]
+        log sql.inspect, "SimpleDB" do
+          case sql[:action]
           when :insert
             item_name = get_id sql[:attrs]
             item_name = sql[:attrs][:id] = generate_id unless item_name
@@ -333,6 +333,7 @@ module ActiveRecord
             @connection.delete_attributes domain_name, item_name, nil, sql[:wheres]
           else
             raise "Unsupported action: #{sql[:action].inspect}"
+          end
         end
       end
 
@@ -342,30 +343,29 @@ module ActiveRecord
       alias :create :insert_sql
 
       def select sql, name = nil
-        puts sql
-        result = []
-        response = @connection.select(sql, nil, true)
-        collection_name = get_collection_column_and_name(sql)
-        columns = columns_definition(collection_name)
+        log sql, "SimpleDB" do
+          result = []
+          response = @connection.select(sql, nil, true)
+          collection_name = get_collection_column_and_name(sql)
+          columns = columns_definition(collection_name)
 
-        response[:items].each do |item|
-          item.each do |id, attrs|
-            ritem = {}
-            ritem['id'] = id unless id == 'Domain' && attrs['Count'] # unless count(*) result
-            attrs.each {|k, vs|
-              column = columns[k]
-              if column.present?
-                ritem[column.name] = column.unquote_number(vs.first)
-              else
-                ritem[k] = vs.first
-              end
-            }
-            puts ritem.inspect
-            result << ritem
+          response[:items].each do |item|
+            item.each do |id, attrs|
+              ritem = {}
+              ritem['id'] = id unless id == 'Domain' && attrs['Count'] # unless count(*) result
+              attrs.each {|k, vs|
+                column = columns[k]
+                if column.present?
+                  ritem[column.name] = column.unquote_number(vs.first)
+                else
+                  ritem[k] = vs.first
+                end
+              }
+              result << ritem
+            end
           end
+          result
         end
-        # puts "Box usage: #{response[:box_usage].to_f}"
-        result
       end
 
       # Executes the update statement and returns the number of rows affected.
@@ -414,7 +414,7 @@ module ActiveRecord
           raise  PreparedStatementInvalid, "collection column '#{@@ccn.values.join(" or ")}' not found in the WHERE section in query"
         end
       end
-
     end
+
   end
 end
