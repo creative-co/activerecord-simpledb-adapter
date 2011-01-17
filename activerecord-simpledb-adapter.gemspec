@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{activerecord-simpledb-adapter}
-  s.version = "0.1.1"
+  s.version = "0.1.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ilia Ablamonov", "Alex Gorkunov", "Cloud Castle Inc."]
@@ -30,7 +30,12 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{ActiveRecord SimpleDB adapter}
   s.test_files = [
-    "spec/activerecord-simpledb-adapter_spec.rb",
+    "spec/active_record/connection_adapters/simpledb_adapter_spec.rb",
+    "spec/active_record/core_actions_spec.rb",
+    "spec/active_record/locking_spec.rb",
+    "spec/active_record/record_attributes_spec.rb",
+    "spec/active_record/validates_spec.rb",
+    "spec/active_record/where_spec.rb",
     "spec/spec_helper.rb"
   ]
 
