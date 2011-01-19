@@ -88,6 +88,7 @@ module ActiveRecord
               :server => config[:host],
               :port => config[:port],
               :protocol => config[:protocol],
+              :connection_mode => :per_thread,
               :logger => SimpleDBLogger.new(logger)
           },
           config
@@ -407,6 +408,10 @@ module ActiveRecord
 
       def delete_domain domain_name
         @connection.delete_domain domain_name
+      end
+
+      def list_domains
+        @connection.list_domains[:domains]
       end
 
       private
