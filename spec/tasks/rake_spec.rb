@@ -49,6 +49,17 @@ describe "gem rake tasks" do
     end
   end
 
+  describe "db:drop" do
+    before do
+      @task_name = "db:drop"
+      recreate_domain
+    end
+    it "should drop sdb domain" do
+      @rake[@task_name].invoke
+      ActiveRecord::Base.connection.list_domains.should_not include(DOMAIN)
+    end
+  end
+
   describe "db:seed" do
     before do
       @task_name = "db:seed"
