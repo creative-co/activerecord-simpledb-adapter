@@ -1,6 +1,19 @@
 require 'spec_helper'
 require 'rake'
 
+DOMAIN = CONNECTION_PARAMS[:domain_name]
+
+def delete_domain_if_exist
+  ActiveRecord::Base.establish_connection(CONNECTION_PARAMS)
+  con = ActiveRecord::Base.connection
+  con.delete_domain(DOMAIN) if con.list_domains.include? DOMAIN
+end
+
+def recreate_domain
+  delete_domain_if_exist
+  ActiveRecord::Base.connection.create_domain DOMAIN
+end
+
 #create mock Rails
 class ::Rails 
   def self.logger
@@ -25,35 +38,45 @@ describe "gem rake tasks" do
     ActiveRecord::Base.stub!(:configurations).and_return({"development" => CONNECTION_PARAMS})
   end
 
-  shared_examples_for "all rake tasks" do
-  end
-
-  def self.for_task task_name, &block
-    describe "rake #{task_name}" do
-      it "should have 'environment' as a prereq" do
-        @rake[task_name].prerequisites.should include("environment")
-      end
-
-      block.call task_name
-    end
-  end
-
-  for_task "db:create" do |task_name|
-    it "should create sdb domain" do
-      @rake[task_name].invoke
-      ActiveRecord::Base.connection.list_domains.should include(CONNECTION_PARAMS[:domain_name])
-    end
-  end
-
-  for_task "db:seed" do |task_name|
+  describe "db:create" do
     before do
-      ActiveRecord::Base.establish_connection(CONNECTION_PARAMS)
-      ActiveRecord::Base.connection.delete_domain(CONNECTION_PARAMS[:domain_name])
-      ActiveRecord::Base.connection.create_domain(CONNECTION_PARAMS[:domain_name])
+      @task_name = "db:create"
+      delete_domain_if_exist
+    end
+    it "should create sdb domain" do
+      @rake[@task_name].invoke
+      ActiveRecord::Base.connection.list_domains.should include(DOMAIN)
+    end
+  end
+
+  describe "db:seed" do
+    before do
+      @task_name = "db:seed"
+      recreate_domain
     end
     it "should pushing data to sdb domain" do
-      @rake[task_name].invoke
+      @rake[@task_name].invoke
       Person.count.should == 1
+    end
+  end
+  
+  describe "db:collection:clear" do
+    before do
+      @task_name = "db:collection:clear"
+      recreate_domain
+      Person.create!(Person.valid_params)
+    end
+
+    it "should receive param with name \"name\"" do
+      @rake[@task_name].arg_names.should include(:name)
+    end
+
+    it "should receive param with name \"ccn\"" do
+      @rake[@task_name].arg_names.should include(:ccn)
+    end
+    it "should clear collection by name" do
+      @rake[@task_name].invoke("people")
+      Person.count.should == 0
     end
   end
 end

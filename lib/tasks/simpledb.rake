@@ -17,9 +17,28 @@ namespace :db do
   end
 
   def create_domain(config)
-    ActiveRecord::Base.establish_connection(config)
     domain_name = config[:domain_name] || config['domain_name']
     Rails.logger.info "Create sdb domain #{domain_name}"
     ActiveRecord::Base.connection.create_domain(domain_name)
+  end
+
+  namespace :collection do
+    task :clear, [:name, :ccn] => :environment do |t, args|
+      ccn = args[:ccn] || 'collection'
+      name = args[:name]
+      if name.present?
+        config = ActiveRecord::Base.configurations[Rails.env]
+        domain_name = config[:domain_name] || config['domain_name']
+        rows = ActiveRecord::Base.connection.select_all("SELECT * FROM `#{domain_name}` WHERE `#{ccn}` = '#{name}'")
+        rows.each do |row|
+          ActiveRecord::Base.connection.delete_sql({
+            :action => :delete,
+            :wheres => {:id => row['id']}
+          })
+        end
+      else
+        Rails.logger.info "Please put collection name as \"name=<collection_name>\""
+      end
+    end
   end
 end
