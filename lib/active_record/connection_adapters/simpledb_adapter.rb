@@ -99,12 +99,37 @@ module ActiveRecord
     def self.columns_definition options = {}
       table_definition = ConnectionAdapters::SimpleDbTableDifinition.new(options[:collection_column_name] || DEFAULT_COLLECTION_COLUMN_NAME)
       table_definition.primary_key(Base.get_primary_key(table_name.to_s.singularize))
+
+      alias_method_chain :initialize, :defaults
+      
       yield table_definition if block_given?
 
       ConnectionAdapters::SimpleDBAdapter.set_collection_columns table_name, table_definition
     end
 
+    def initialize_with_defaults(attrs = nil)
+      initialize_without_defaults(attrs) do
+        safe_attribute_names = []
+        if attrs
+          stringified_attrs = attrs.stringify_keys
+          safe_attrs =  sanitize_for_mass_assignment(stringified_attrs)
+          safe_attribute_names = safe_attrs.keys.map { |x| x.to_s }
+        end
 
+        ActiveRecord::Base.connection.columns_definition(self.class.table_name).columns_with_defaults.each do |column|
+          if !safe_attribute_names.any? { |attr_name| attr_name =~ /^#{column.name}($|\()/ }
+            value =  if column.default.is_a? Proc
+                       column.default.call(self)
+                     else
+                       column.default
+                     end
+            __send__("#{column.name}=", value)
+            changed_attributes.delete(column.name)
+          end
+        end
+        yield(self) if block_given?
+      end
+    end
 
   end
 
@@ -180,8 +205,12 @@ module ActiveRecord
 
       def column(name, type, options = {})
         raise ConfigurationError, %Q(column '#{collection_column_name}' reserved, please change column name) if name.to_s == collection_column_name
-        @columns << SimpleDBColumn.new(name.to_s, type.to_sym, options[:limit], options[:precision], options[:to])
+        @columns << SimpleDBColumn.new(name.to_s, type.to_sym, options[:limit], options[:precision], options[:to], options[:default])
         self
+      end
+
+      def columns_with_defaults
+        @columns_with_defaults ||= @columns.select { |column| column.default.present? }
       end
 
     end
@@ -191,10 +220,11 @@ module ActiveRecord
       DEFAULT_NUMBER_LIMIT = 4
       DEFAULT_FLOAT_PRECISION = 4
 
-      def initialize(name, type, limit = nil, pricision = nil, to = nil)
+      def initialize(name, type, limit = nil, pricision = nil, to = nil, default = nil)
         super name, nil, type, true
         @limit = limit if limit.present?
         @precision = precision if precision.present?
+        @default = default
         @to = to
       end
 
