@@ -40,7 +40,12 @@ model example:
 	    t.timestamps
 	  end
 	end
-  
+
+# TODO
+
+- Add some howtos to wiki
+- Rewrite rails model generator
+
 # LICENSE
 
 (The MIT License)
