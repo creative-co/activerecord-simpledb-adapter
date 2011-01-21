@@ -19,12 +19,13 @@ Jeweler::Tasks.new do |gem|
   gem.email = "ilia@flamefork.ru"
   gem.authors = ["Ilia Ablamonov", "Alex Gorkunov", "Cloud Castle Inc."]
 
-  gem.files = FileList['lib/**/*.*', 'LICENSE.txt', 'README.md', 'activerecord-simpledb-adapter.gemspec']
+  gem.files = FileList['lib/**/*.*', 'LICENSE.txt', 'README.md', 'activerecord-simpledb-adapter.gemspec', 'Gemfile', 'Gemfile.lock']
 
   gem.add_runtime_dependency 'aws', '~> 2.3.0'
   gem.add_runtime_dependency 'activerecord', '~> 3.0.3'
   gem.add_runtime_dependency 'activesupport', '~> 3.0.3'
   gem.add_runtime_dependency 'uuidtools', '~> 2.1.1'
+  gem.add_runtime_dependency 'rails', '~> 3.0.3'
 end
 Jeweler::RubygemsDotOrgTasks.new
 

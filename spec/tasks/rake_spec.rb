@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'rake'
+require 'rails'
 
 DOMAIN = CONNECTION_PARAMS[:domain_name]
 
@@ -14,21 +15,6 @@ def recreate_domain
   ActiveRecord::Base.connection.create_domain DOMAIN
 end
 
-#create mock Rails
-class ::Rails 
-  def self.logger
-    @@logger ||= Logger.new(STDOUT)
-  end
-
-  def self.env
-    "development"
-  end
-
-  def self.root
-    File.dirname(__FILE__) + "/../assets"
-  end
-end
-
 describe "gem rake tasks" do
   before do
     @rake = Rake::Application.new
@@ -36,6 +22,9 @@ describe "gem rake tasks" do
     Rake.application.rake_require "tasks/simpledb"
     Rake::Task.define_task(:environment)
     ActiveRecord::Base.stub!(:configurations).and_return({"development" => CONNECTION_PARAMS})
+    Rails.stub!(:env).and_return("development")
+    Rails.stub!(:logger).and_return(Logger.new(STDOUT))
+    Rails.stub!(:root).and_return(File.dirname(__FILE__) + "/../assets")
   end
 
   describe "db:create" do

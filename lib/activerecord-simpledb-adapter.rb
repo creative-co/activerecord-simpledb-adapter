@@ -5,7 +5,7 @@ module ActiveRecordSimpledbAdapter
     end
 
     generators do
-      require 'rails/generators/active_record/model/model_generator'
+      require 'generators/active_record/model/model_generator'
     end
 
     ActiveSupport.on_load(:active_record) do

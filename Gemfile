@@ -8,4 +8,7 @@ group :development do
   gem "aws"
   gem "activerecord"
   gem "activesupport"
+  gem 'genspec', '0.2.0.prerails3.2'
+  gem 'thor'
+  gem 'rails'
 end
