@@ -34,18 +34,15 @@ namespace :db do
 
   namespace :collection do
     desc "Clear all data for collection by name"
-    task :clear, [:name, :ccn] => :environment do |t, args|
-      ccn = args[:ccn] || 'collection'
+    task :clear, [:name] => :environment do |t, args|
       name = args[:name]
       if name.present?
-        rows = ActiveRecord::Base.connection.select_all("SELECT id FROM `#{domain_name}` WHERE `#{ccn}` = '#{name}'")
-        rows.each do |row|
-          ActiveRecord::Base.connection.execute({
-            :action => :delete,
-            :wheres => {:id => row['id']}
-          })
-          log "#{row.count} items was deleted."
+        count = 0
+        Kernel.const_get(name.capitalize).all.each do |item|
+          item.destroy
+          count += 1
         end
+        log "#{count} items was deleted."
       else
         log "Please put collection name as \"name=<collection_name>\""
       end
@@ -57,15 +54,15 @@ namespace :db do
     log "Sdb domain \"#{domain_name}\" was created"
   end
 
-  def config
-    @config ||= ActiveRecord::Base.configurations[Rails.env]
-  end
-
   def domain_name
-    config[:domain_name] || config['domain_name']
+    conf[:domain_name] || conf['domain_name']
+  end
+  
+  def conf
+    @conf ||= ActiveRecord::Base.configurations[Rails.env]
   end
 
   def log text
-    Rails.logger.info text
+    puts text
   end
 end

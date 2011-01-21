@@ -71,11 +71,8 @@ describe "gem rake tasks" do
       @rake[@task_name].arg_names.should include(:name)
     end
 
-    it "should receive param with name \"ccn\"" do
-      @rake[@task_name].arg_names.should include(:ccn)
-    end
     it "should clear collection by name" do
-      @rake[@task_name].invoke("people")
+      @rake[@task_name].invoke("person")
       Person.count.should == 0
     end
   end
