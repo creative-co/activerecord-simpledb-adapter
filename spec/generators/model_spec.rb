@@ -4,17 +4,14 @@ require 'rails/generators'
 require 'generators/active_record/model/model_generator'
 require 'genspec'
 describe :model do
-  context "with no arguments or options" do
-    it "should generate a help message" do
-      subject.should output(/Usage/)
-    end
-  end
-
   context "with a name argument" do
-    with_args :person, "name:string", "year:integer"
+    with_args "foo", "name:string", "year:integer", "--orm=active_record"
 
-    it "should generate a Person model" do
-      subject.should generate("app/models/person.rb")
+    it "should generate a model called 'foo' with two columns" do
+      subject.should generate("app/models/foo.rb") { |content|
+        content.should =~ /class Foo < ActiveRecord\:\:Base/
+        content.should =~ /columns_definition do \|c\|\n    c.string :name\n    c.integer :year\n  end/
+      }
     end
   end
 end
