@@ -5,23 +5,27 @@
 
 Gem::Specification.new do |s|
   s.name = %q{activerecord-simpledb-adapter}
-  s.version = "0.1.2"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ilia Ablamonov", "Alex Gorkunov", "Cloud Castle Inc."]
-  s.date = %q{2011-01-17}
+  s.date = %q{2011-01-21}
   s.email = %q{ilia@flamefork.ru}
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
   ]
   s.files = [
+    "Gemfile",
+    "Gemfile.lock",
     "LICENSE.txt",
     "README.md",
     "activerecord-simpledb-adapter.gemspec",
     "lib/active_record/connection_adapters/simpledb_adapter.rb",
     "lib/activerecord-simpledb-adapter.rb",
     "lib/arel/visitors/simpledb.rb",
+    "lib/generators/active_record/model/model_generator.rb",
+    "lib/generators/active_record/model/templates/model.rb",
     "lib/tasks/simpledb.rake"
   ]
   s.homepage = %q{http://github.com/cloudcastle/activerecord-simpledb-adapter}
@@ -32,11 +36,15 @@ Gem::Specification.new do |s|
   s.test_files = [
     "spec/active_record/connection_adapters/simpledb_adapter_spec.rb",
     "spec/active_record/core_actions_spec.rb",
+    "spec/active_record/defaults_spec.rb",
     "spec/active_record/locking_spec.rb",
     "spec/active_record/record_attributes_spec.rb",
     "spec/active_record/validates_spec.rb",
     "spec/active_record/where_spec.rb",
-    "spec/spec_helper.rb"
+    "spec/assets/db/seeds.rb",
+    "spec/generators/model_spec.rb",
+    "spec/spec_helper.rb",
+    "spec/tasks/rake_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
@@ -51,10 +59,14 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<aws>, [">= 0"])
       s.add_development_dependency(%q<activerecord>, [">= 0"])
       s.add_development_dependency(%q<activesupport>, [">= 0"])
+      s.add_development_dependency(%q<genspec>, ["= 0.2.0.prerails3.2"])
+      s.add_development_dependency(%q<thor>, [">= 0"])
+      s.add_development_dependency(%q<rails>, [">= 0"])
       s.add_runtime_dependency(%q<aws>, ["~> 2.3.0"])
       s.add_runtime_dependency(%q<activerecord>, ["~> 3.0.3"])
       s.add_runtime_dependency(%q<activesupport>, ["~> 3.0.3"])
       s.add_runtime_dependency(%q<uuidtools>, ["~> 2.1.1"])
+      s.add_runtime_dependency(%q<rails>, ["~> 3.0.3"])
     else
       s.add_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
@@ -63,10 +75,14 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<aws>, [">= 0"])
       s.add_dependency(%q<activerecord>, [">= 0"])
       s.add_dependency(%q<activesupport>, [">= 0"])
+      s.add_dependency(%q<genspec>, ["= 0.2.0.prerails3.2"])
+      s.add_dependency(%q<thor>, [">= 0"])
+      s.add_dependency(%q<rails>, [">= 0"])
       s.add_dependency(%q<aws>, ["~> 2.3.0"])
       s.add_dependency(%q<activerecord>, ["~> 3.0.3"])
       s.add_dependency(%q<activesupport>, ["~> 3.0.3"])
       s.add_dependency(%q<uuidtools>, ["~> 2.1.1"])
+      s.add_dependency(%q<rails>, ["~> 3.0.3"])
     end
   else
     s.add_dependency(%q<rspec>, ["~> 2.3.0"])
@@ -76,10 +92,14 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<aws>, [">= 0"])
     s.add_dependency(%q<activerecord>, [">= 0"])
     s.add_dependency(%q<activesupport>, [">= 0"])
+    s.add_dependency(%q<genspec>, ["= 0.2.0.prerails3.2"])
+    s.add_dependency(%q<thor>, [">= 0"])
+    s.add_dependency(%q<rails>, [">= 0"])
     s.add_dependency(%q<aws>, ["~> 2.3.0"])
     s.add_dependency(%q<activerecord>, ["~> 3.0.3"])
     s.add_dependency(%q<activesupport>, ["~> 3.0.3"])
     s.add_dependency(%q<uuidtools>, ["~> 2.1.1"])
+    s.add_dependency(%q<rails>, ["~> 3.0.3"])
   end
 end
 
