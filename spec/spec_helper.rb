@@ -12,6 +12,7 @@ rescue Bundler::GemNotFound => e
 end if File.exist?(gemfile)
 
 $:.unshift(File.dirname(__FILE__) + '/../lib')
+require 'ap'
 require 'rspec'
 require 'aws'
 require 'active_record'

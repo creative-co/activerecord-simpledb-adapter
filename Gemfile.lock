@@ -29,6 +29,7 @@ GEM
       activesupport (= 3.0.7)
     activesupport (3.0.7)
     arel (2.0.9)
+    awesome_print (0.3.2)
     aws (2.4.5)
       activesupport
       http_connection
@@ -98,6 +99,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord
   activesupport
+  awesome_print
   aws
   bundler (~> 1.0.0)
   genspec (= 0.2.0.prerails3.2)

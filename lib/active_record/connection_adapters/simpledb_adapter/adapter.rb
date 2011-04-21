@@ -140,14 +140,17 @@ module ActiveRecord
         end
       end
 
+      def translate_exception(exception, message)
+        raise exception
+      end
       # Executes the update statement and returns the number of rows affected.
       def update_sql(sql, name = nil)
         begin
           execute(sql, name)
           1
         rescue Aws::AwsError => ex
-          #if not conflict state raise
-          raise if ex.http_code != '409'
+          #if not a conflict state this raise
+          raise ex if ex.http_code.to_i != 409
           0
         end
       end
