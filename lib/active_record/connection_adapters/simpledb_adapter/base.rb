@@ -56,5 +56,10 @@ module ActiveRecord
       end
     end
 
+    def self.batch type = :update, &block
+      connection.begin_batch type
+      block.call
+      connection.commit_batch
+    end
   end
 end

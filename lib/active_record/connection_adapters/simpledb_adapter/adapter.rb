@@ -58,7 +58,37 @@ module ActiveRecord
         table_name
       end
       #=======================================
+      #======== BATCHES ==========
+      def begin_batch type
+        raise ActiveRecord::ActiveRecordError.new("Batch already started. Finish it before start new batch") \
+          if defined?(@batch_type) && !@batch_type.nil?
 
+        @batch_type = type
+      end
+
+      def commit_batch
+        log({:type => @batch_type, :count => batch_pool.count }.inspect, "SimpleDB Batch Operation") do
+          case @batch_type
+          when :update
+            @connection.batch_put_attributes domain_name, batch_pool
+          when :delete
+            @connection.batch_delete_attributes domain_name, batch_pool
+          end
+          clear_batch
+        end
+      end
+
+      def clear_batch
+        batch_pool.clear
+        @batch_type = nil
+      end
+
+      def is_batch type
+        type = :update if type == :insert
+        defined?(@batch_type) && @batch_type == type
+      end
+
+      #===========================
       attr_reader :domain_name
 
       def initialize(connection, logger, aws_key, aws_secret, domain_name, connection_parameters, config)
@@ -90,19 +120,33 @@ module ActiveRecord
       end
 
       def execute sql, name = nil, skip_logging = false
-        log sql.inspect, "SimpleDB" do
+        log_title = "SimpleDB"
+        log_title += "(batched)" if is_batch sql[:action]
+        log sql.inspect, log_title do
           case sql[:action]
           when :insert
             item_name = get_id sql[:attrs]
             item_name = sql[:attrs][:id] = generate_id unless item_name
-            @connection.put_attributes domain_name, item_name, sql[:attrs], true
+            if is_batch :update
+              add_to_batch item_name, sql[:attrs], true
+            else
+              @connection.put_attributes domain_name, item_name, sql[:attrs], true
+            end
             @last_insert_id = item_name
           when :update
             item_name = get_id sql[:wheres], true
-            @connection.put_attributes domain_name, item_name, sql[:attrs], true, sql[:wheres]
+            if is_batch :update
+              add_to_batch item_name, sql[:attrs], true
+            else
+              @connection.put_attributes domain_name, item_name, sql[:attrs], true, sql[:wheres]
+            end
           when :delete
             item_name = get_id sql[:wheres], true
-            @connection.delete_attributes domain_name, item_name, nil, sql[:wheres]
+            if is_batch :delete
+              add_to_batch item_name
+            else
+              @connection.delete_attributes domain_name, item_name, nil, sql[:wheres]
+            end
           else
             raise "Unsupported action: #{sql[:action].inspect}"
           end
@@ -141,6 +185,7 @@ module ActiveRecord
       end
 
       def translate_exception(exception, message)
+        clear_batch
         raise exception
       end
       # Executes the update statement and returns the number of rows affected.
@@ -191,6 +236,20 @@ module ActiveRecord
           $2
         else
           raise  PreparedStatementInvalid, "collection column '#{@@ccn.values.join(" or ")}' not found in the WHERE section in query"
+        end
+      end
+
+      MAX_BATCH_ITEM_COUNT = 25
+      def batch_pool
+        @batch_pool ||=[]
+      end
+
+      def add_to_batch item_name, attributes = nil, replace = nil
+        batch_pool << Aws::SdbInterface::Item.new(item_name, attributes, replace)
+        if batch_pool.count == MAX_BATCH_ITEM_COUNT
+          type = @batch_type
+          commit_batch
+          begin_batch type
         end
       end
     end

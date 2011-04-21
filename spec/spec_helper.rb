@@ -55,6 +55,12 @@ class Person < ActiveRecord::Base
         :state => 'paid'
     }
   end
+
+  def self.create_valid
+    create! valid_params
+  end
+
+  def is_valid?
+    Person.valid_params.all? {|key, value| self.try(key) == value}
+  end
 end
-
-
