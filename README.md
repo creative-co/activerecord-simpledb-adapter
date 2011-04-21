@@ -28,6 +28,7 @@ for creating domain:
 	rake db:create
 
 model example:
+
     Person < ActiveRecord::Base
 	  columns_definition do |t|
 	    t.string :login
@@ -39,6 +40,17 @@ model example:
 
 	    t.timestamps
 	  end
+	end
+
+using batches:
+
+	#default batch type is update
+	Person.batch do
+	  Person.create(some_valid_params)
+	end
+	#or for delete
+	Person.batch(:delete) do
+	  person_item.destroy
 	end
 
 # TODO
