@@ -56,7 +56,6 @@ using batches:
 # TODO
 
 - Add some howtos to wiki
-- Rewrite rails model generator
 
 # LICENSE
 
