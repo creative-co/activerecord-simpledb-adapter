@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{activerecord-simpledb-adapter}
-  s.version = "0.2.1"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ilia Ablamonov", "Alex Gorkunov", "Cloud Castle Inc."]
-  s.date = %q{2011-01-21}
+  s.date = %q{2011-04-21}
   s.email = %q{ilia@flamefork.ru}
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -22,6 +22,14 @@ Gem::Specification.new do |s|
     "README.md",
     "activerecord-simpledb-adapter.gemspec",
     "lib/active_record/connection_adapters/simpledb_adapter.rb",
+    "lib/active_record/connection_adapters/simpledb_adapter/adapter.rb",
+    "lib/active_record/connection_adapters/simpledb_adapter/base.rb",
+    "lib/active_record/connection_adapters/simpledb_adapter/column.rb",
+    "lib/active_record/connection_adapters/simpledb_adapter/finder_methods.rb",
+    "lib/active_record/connection_adapters/simpledb_adapter/misc/aws_overrides.rb",
+    "lib/active_record/connection_adapters/simpledb_adapter/misc/simpledb_logger.rb",
+    "lib/active_record/connection_adapters/simpledb_adapter/table_definition.rb",
+    "lib/active_record/connection_adapters/simpledb_adapter/validations.rb",
     "lib/activerecord-simpledb-adapter.rb",
     "lib/arel/visitors/simpledb.rb",
     "lib/generators/active_record/model/model_generator.rb",
@@ -34,6 +42,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{ActiveRecord SimpleDB adapter}
   s.test_files = [
+    "spec/active_record/batch_spec.rb",
     "spec/active_record/connection_adapters/simpledb_adapter_spec.rb",
     "spec/active_record/core_actions_spec.rb",
     "spec/active_record/defaults_spec.rb",
@@ -52,6 +61,7 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+      s.add_development_dependency(%q<awesome_print>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
@@ -63,11 +73,12 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<thor>, [">= 0"])
       s.add_development_dependency(%q<rails>, [">= 0"])
       s.add_runtime_dependency(%q<aws>, ["~> 2.3.0"])
-      s.add_runtime_dependency(%q<activerecord>, ["~> 3.0.3"])
-      s.add_runtime_dependency(%q<activesupport>, ["~> 3.0.3"])
+      s.add_runtime_dependency(%q<activerecord>, ["~> 3.0.7"])
+      s.add_runtime_dependency(%q<activesupport>, ["~> 3.0.7"])
       s.add_runtime_dependency(%q<uuidtools>, ["~> 2.1.1"])
-      s.add_runtime_dependency(%q<rails>, ["~> 3.0.3"])
+      s.add_runtime_dependency(%q<rails>, ["~> 3.0.7"])
     else
+      s.add_dependency(%q<awesome_print>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
@@ -79,12 +90,13 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<thor>, [">= 0"])
       s.add_dependency(%q<rails>, [">= 0"])
       s.add_dependency(%q<aws>, ["~> 2.3.0"])
-      s.add_dependency(%q<activerecord>, ["~> 3.0.3"])
-      s.add_dependency(%q<activesupport>, ["~> 3.0.3"])
+      s.add_dependency(%q<activerecord>, ["~> 3.0.7"])
+      s.add_dependency(%q<activesupport>, ["~> 3.0.7"])
       s.add_dependency(%q<uuidtools>, ["~> 2.1.1"])
-      s.add_dependency(%q<rails>, ["~> 3.0.3"])
+      s.add_dependency(%q<rails>, ["~> 3.0.7"])
     end
   else
+    s.add_dependency(%q<awesome_print>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 2.3.0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
@@ -96,10 +108,10 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<thor>, [">= 0"])
     s.add_dependency(%q<rails>, [">= 0"])
     s.add_dependency(%q<aws>, ["~> 2.3.0"])
-    s.add_dependency(%q<activerecord>, ["~> 3.0.3"])
-    s.add_dependency(%q<activesupport>, ["~> 3.0.3"])
+    s.add_dependency(%q<activerecord>, ["~> 3.0.7"])
+    s.add_dependency(%q<activesupport>, ["~> 3.0.7"])
     s.add_dependency(%q<uuidtools>, ["~> 2.1.1"])
-    s.add_dependency(%q<rails>, ["~> 3.0.3"])
+    s.add_dependency(%q<rails>, ["~> 3.0.7"])
   end
 end
 
