@@ -1,17 +1,17 @@
 require 'spec_helper'
 #spec helpers difition
-class Foo < ActiveRecord::Base
+class F < ActiveRecord::Base
   columns_definition do |t|
     t.string :body
   end
 
-  has_many :bars
-  after_save lambda { self.bars.create!({:body => "test"}) }
+  has_many :bs
+  after_save lambda { self.bs.create!({:body => "test"}) }
 end
-class Bar < ActiveRecord::Base
+class B < ActiveRecord::Base
   columns_definition do |t|
     t.string :body
-    t.string :foo_id
+    t.string :f_id
   end
 end
 #testes
@@ -59,9 +59,9 @@ describe "SimpleDBAdapter ActiveRecord batches operation" do
 
   it "should batch internal operations too (sub-updates)" do
     count = 5
-    Foo.batch do
-      count.times { Foo.create!({:body => "body"}) }
+    F.batch do
+      count.times { F.create!({:body => "body"}) }
     end
-    [Foo, Bar].each {|r| r.count.should == count }
+    [F, B].each {|r| r.count.should == count }
   end
 end 
