@@ -42,7 +42,14 @@ module Arel
         collection = o.cores.first.froms.name
         o.cores.first.wheres << SqlLiteral.new("`#{@connection.collection_column_name(collection)}` = #{quote(collection)}")
         o.cores.first.froms = Table.new @connection.domain_name
-        super
+        query = super
+        query.offset = o.offset.expr if o.offset 
+        query.limit = o.limit.expr if o.limit 
+        query
+      end
+
+      def visit_Arel_Nodes_Offset o
+        nil
       end
 
       def visit_Arel_Nodes_Values o
@@ -69,7 +76,11 @@ module Arel
 
       def visit_Arel_Nodes_Equality o
         right = o.right ? hash_value_quote(o.right, o.left.column) : nil
+        begin
         left = o.left.column.name
+        rescue
+          puts $!.backtrace
+        end
         {left => right}.tap { |m|
           m.override_to_s "#{visit o.left} = #{quote(o.right, o.left.column)}"
         }
@@ -112,7 +123,10 @@ module Arel
     VISITORS['simpledb'] = Arel::Visitors::SimpleDB
   end
 end
-
+class String
+  attr_accessor :offset
+  attr_accessor :limit
+end
 class Object
   def override_to_s s
     @override_to_s = s

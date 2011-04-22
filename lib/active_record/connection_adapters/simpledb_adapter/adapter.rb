@@ -165,7 +165,18 @@ module ActiveRecord
       def select sql, name = nil
         log sql, "SimpleDB" do
           result = []
-          response = @connection.select(sql, nil, true)
+          response = nil
+          if sql.offset
+            first_query = sql.gsub(/LIMIT\s+\d+/, "LIMIT #{sql.offset}")
+            first_query.gsub!(/SELECT(.+?)FROM/, "SELECT COUNT(*) FROM")
+            log first_query, "SimpleDB (offset partial)" do
+              response = @connection.select(first_query, nil, false) #without consistent read
+            end
+            puts response[:request_id]
+            response = @connection.select(sql, response[:request_id], true)
+          else
+            response = @connection.select(sql, nil, true)
+          end
           collection_name = get_collection_column_and_name(sql)
           columns = columns_definition(collection_name)
 
