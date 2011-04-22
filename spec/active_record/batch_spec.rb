@@ -74,7 +74,7 @@ describe "SimpleDBAdapter ActiveRecord batches operation" do
   end
 
   it "should auto split to several batches when count of items more than BATCH_MAX_ITEM_COUNT" do
-    count = 35
+    count = 50
     Person.batch do
       count.times { |i| Person.create_valid }
     end

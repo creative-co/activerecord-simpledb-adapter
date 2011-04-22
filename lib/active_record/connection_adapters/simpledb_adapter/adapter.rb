@@ -68,6 +68,8 @@ module ActiveRecord
 
       def commit_batch type = nil
         count = batch_pool.inject(0) {|sum, (key, value)| sum += value.count }
+        clear_batch and return unless count
+
         log({:count => count }.inspect, "SimpleDB Batch Operation") do
           pool = batch_pool[:update]
           @connection.batch_put_attributes(domain_name, pool) \
