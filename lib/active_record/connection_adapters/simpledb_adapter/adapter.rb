@@ -59,41 +59,45 @@ module ActiveRecord
       end
       #=======================================
       #======== BATCHES ==========
-      def begin_batch type
+      def begin_batch
         raise ActiveRecord::ActiveRecordError.new("Batch already started. Finish it before start new batch") \
-          if defined?(@batch_type) && !@batch_type.nil?
+          if batch_started
 
-        @batch_type = type
+        @batch_started = true
       end
 
-      def commit_batch
-        log({:type => @batch_type, :count => batch_pool.count }.inspect, "SimpleDB Batch Operation") do
-          case @batch_type
-          when :update
-            @connection.batch_put_attributes domain_name, batch_pool
-          when :delete
-            @connection.batch_delete_attributes domain_name, batch_pool
-          end
-          clear_batch
+      def commit_batch type = nil
+        count = batch_pool.inject(0) {|sum, (key, value)| sum += value.count }
+        log({:count => count }.inspect, "SimpleDB Batch Operation") do
+          pool = batch_pool[:update]
+          @connection.batch_put_attributes(domain_name, pool) \
+            if pool && (type.nil? || type == :update)
+
+          pool = batch_pool[:delete]
+          @connection.batch_delete_attributes(domain_name, pool) \
+            if pool && (type.nil? || type == :delete)
+
+          clear_batch type
         end
       end
 
-      def clear_batch
-        batch_pool.clear
-        @batch_type = nil
-      end
-
-      def is_batch type
-        type = :update if type == :insert
-        defined?(@batch_type) && @batch_type == type
+      def clear_batch type = nil
+        if type.nil?
+          batch_pool.clear
+          @batch_started = false
+        else
+          batch_pool[type].clear
+        end
       end
 
       #===========================
       attr_reader :domain_name
+      attr_reader :batch_started
 
       def initialize(connection, logger, aws_key, aws_secret, domain_name, connection_parameters, config)
         super(connection, logger)
         @config = config
+        @batch_started = false
         @domain_name = domain_name
         @connection_parameters = [
             aws_key,
@@ -120,30 +124,30 @@ module ActiveRecord
       end
 
       def execute sql, name = nil, skip_logging = false
-        log_title = "SimpleDB"
-        log_title += "(batched)" if is_batch sql[:action]
+        log_title = "SimpleDB (#{sql[:action]})"
+        log_title += " *BATCHED*" if batch_started
         log sql.inspect, log_title do
           case sql[:action]
           when :insert
             item_name = get_id sql[:attrs]
             item_name = sql[:attrs][:id] = generate_id unless item_name
-            if is_batch :update
-              add_to_batch item_name, sql[:attrs], true
+            if batch_started
+              add_to_batch :update, item_name, sql[:attrs], true
             else
               @connection.put_attributes domain_name, item_name, sql[:attrs], true
             end
             @last_insert_id = item_name
           when :update
             item_name = get_id sql[:wheres], true
-            if is_batch :update
-              add_to_batch item_name, sql[:attrs], true
+            if batch_started
+              add_to_batch :update, item_name, sql[:attrs], true
             else
               @connection.put_attributes domain_name, item_name, sql[:attrs], true, sql[:wheres]
             end
           when :delete
             item_name = get_id sql[:wheres], true
-            if is_batch :delete
-              add_to_batch item_name
+            if batch_started
+              add_to_batch :delete, item_name
             else
               @connection.delete_attributes domain_name, item_name, nil, sql[:wheres]
             end
@@ -241,15 +245,14 @@ module ActiveRecord
 
       MAX_BATCH_ITEM_COUNT = 25
       def batch_pool
-        @batch_pool ||=[]
+        @batch_pool ||= {}
       end
 
-      def add_to_batch item_name, attributes = nil, replace = nil
-        batch_pool << Aws::SdbInterface::Item.new(item_name, attributes, replace)
-        if batch_pool.count == MAX_BATCH_ITEM_COUNT
-          type = @batch_type
-          commit_batch
-          begin_batch type
+      def add_to_batch type, item_name, attributes = nil, replace = nil
+        type_batch_pool = (batch_pool[type] ||= [])
+        type_batch_pool << Aws::SdbInterface::Item.new(item_name, attributes, replace)
+        if type_batch_pool.count == MAX_BATCH_ITEM_COUNT
+          commit_batch type
         end
       end
     end

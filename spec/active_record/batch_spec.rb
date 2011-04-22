@@ -54,12 +54,25 @@ describe "SimpleDBAdapter ActiveRecord batches operation" do
     count = 5
     items = []
     count.times { items << Person.create_valid }
-    Person.batch(:delete) do
+    Person.batch do
       items.each {|item| item.destroy }
     end
     Person.count.should == 0
   end
   
+  it "should work with diferrent statments in one batch session" do
+    count = 5
+    items = []
+    count.times { items << Person.create_valid }
+    Person.batch do
+      items.each do |item| 
+        item.destroy
+        Person.create_valid
+      end
+    end
+    Person.count.should == count
+  end
+
   it "should auto split to several batches when count of items more than BATCH_MAX_ITEM_COUNT" do
     count = 35
     Person.batch do
