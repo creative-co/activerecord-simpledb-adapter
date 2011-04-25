@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{activerecord-simpledb-adapter}
-  s.version = "0.4.1"
+  s.version = "0.4.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ilia Ablamonov", "Alex Gorkunov", "Cloud Castle Inc."]
-  s.date = %q{2011-04-22}
+  s.date = %q{2011-04-25}
   s.email = %q{ilia@flamefork.ru}
   s.extra_rdoc_files = [
     "LICENSE.txt",
