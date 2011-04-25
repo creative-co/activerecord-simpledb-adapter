@@ -49,7 +49,7 @@ describe "SimpleDBAdapter ActiveRecord batches operation" do
     items.count.should == count
     items.each { |item| item.login.should == 'test' }
   end
-  #this test doesn't work with fakesdb
+
   it "should work with usual destroy statments" do
     count = 5
     items = []

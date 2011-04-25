@@ -103,4 +103,9 @@ describe "SimpleDBAdapter ActiveRecord attributes" do
     p1.updated_at.class.should == Time
     p1.updated_at.should > p2.updated_at
   end
+  it "should update attributes with update_attributes" do
+    p1 = Person.create_valid
+    p1.update_attributes!({:login =>"123"})
+    p1.login.should == "123"
+  end
 end
