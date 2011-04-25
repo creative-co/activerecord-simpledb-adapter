@@ -174,7 +174,6 @@ module ActiveRecord
             log first_query, "SimpleDB (offset partial)" do
               response = @connection.select(first_query, nil, false) #without consistent read
             end
-            puts response[:request_id]
             response = @connection.select(sql, response[:request_id], true)
           else
             response = @connection.select(sql, nil, true)
