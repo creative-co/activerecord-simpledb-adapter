@@ -14,8 +14,11 @@ describe "SimpleDBAdapter ActiveRecord offset operation" do
   end
 
   it "should work" do
-    Person.limit(10).offset(20).all.each_with_index do |person, i|
-      person.login.should == "login#{i + 20}"
+    count, offset = 10, 20
+    persons = Person.limit(count).offset(offset).all
+    persons.count.should == count
+    persons.each_with_index do |person, i|
+      person.login.should == "login#{i + offset}"
     end
   end
 end 

@@ -172,9 +172,9 @@ module ActiveRecord
             first_query = sql.gsub(/LIMIT\s+\d+/, "LIMIT #{sql.offset}")
             first_query.gsub!(/SELECT(.+?)FROM/, "SELECT COUNT(*) FROM")
             log first_query, "SimpleDB (offset partial)" do
-              response = @connection.select(first_query, nil, false) #without consistent read
+              response = @connection.select(first_query, nil, false)
             end
-            response = @connection.select(sql, response[:request_id], true)
+            response = @connection.select(sql, response[:next_token], true)
           else
             response = @connection.select(sql, nil, true)
           end
