@@ -71,13 +71,13 @@ module ActiveRecord
         clear_batch and return unless count
 
         log({:count => count }.inspect, "SimpleDB Batch Operation") do
-          pool = batch_pool[:update]
+          pool = batch_pool[:update] || []
           @connection.batch_put_attributes(domain_name, pool) \
-            if pool && (type.nil? || type == :update)
+            if pool.any? && (type.nil? || type == :update)
 
-          pool = batch_pool[:delete]
+          pool = batch_pool[:delete] || []
           @connection.batch_delete_attributes(domain_name, pool) \
-            if pool && (type.nil? || type == :delete)
+            if pool.any? && (type.nil? || type == :delete)
 
           clear_batch type
         end
