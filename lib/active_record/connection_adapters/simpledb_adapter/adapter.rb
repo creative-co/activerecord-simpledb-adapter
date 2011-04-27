@@ -174,7 +174,7 @@ module ActiveRecord
             log first_query, "SimpleDB (offset partial)" do
               response = @connection.select(first_query, nil, false)
             end
-            response = @connection.select(sql, response[:next_token], true)
+            response = @connection.select(sql, response[:next_token], false)
           else
             response = @connection.select(sql, nil, true)
           end
