@@ -1,9 +1,14 @@
 require 'aws'
 module ActiveRecord
   class Base
+    def self.included(base)
+      puts "test"
+    end
     def self.simpledb_connection(config) # :nodoc:
 
       config = config.symbolize_keys
+      #fix this (replace to module)
+      alias_method_chain :initialize, :defaults
 
       ConnectionAdapters::SimpleDBAdapter.new nil, logger,
           config[:access_key_id],
@@ -25,12 +30,12 @@ module ActiveRecord
       table_definition = ConnectionAdapters::SimpleDbTableDifinition.new(options[:collection_column_name] || DEFAULT_COLLECTION_COLUMN_NAME)
       table_definition.primary_key(Base.get_primary_key(table_name.to_s.singularize))
 
-      alias_method_chain :initialize, :defaults
       
       yield table_definition if block_given?
 
       ConnectionAdapters::SimpleDBAdapter.set_collection_columns table_name, table_definition
     end
+
 
     def initialize_with_defaults(attrs = nil)
       initialize_without_defaults(attrs) do
