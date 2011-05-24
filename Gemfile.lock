@@ -44,7 +44,7 @@ GEM
     git (1.2.5)
     http_connection (1.4.1)
     i18n (0.5.0)
-    jeweler (1.5.2)
+    jeweler (1.6.0)
       bundler (~> 1.0.0)
       git (>= 1.2.5)
       rake
@@ -102,7 +102,7 @@ DEPENDENCIES
   aws
   bundler (~> 1.0.0)
   genspec (= 0.2.0.prerails3.2)
-  jeweler (~> 1.5.2)
+  jeweler
   rails
   rcov
   rspec (~> 2.3.0)
