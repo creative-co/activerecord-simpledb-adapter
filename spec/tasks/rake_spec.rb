@@ -17,14 +17,15 @@ end
 
 describe "gem rake tasks" do
   before do
-    @rake = Rake::Application.new
-    Rake.application = @rake
-    Rake.application.rake_require "tasks/simpledb"
-    Rake::Task.define_task(:environment)
-    ActiveRecord::Base.stub!(:configurations).and_return({"development" => CONNECTION_PARAMS})
-    Rails.stub!(:env).and_return("development")
-    Rails.stub!(:logger).and_return(Logger.new(STDOUT))
-    Rails.stub!(:root).and_return(File.dirname(__FILE__) + "/../assets")
+    unless defined? @rake
+      Rake.application.rake_require "tasks/simpledb"
+      Rake::Task.define_task(:environment)
+      ActiveRecord::Base.stub!(:configurations).and_return({"development" => CONNECTION_PARAMS})
+      Rails.stub!(:env).and_return("development")
+      Rails.stub!(:logger).and_return(Logger.new(STDOUT))
+      Rails.stub!(:root).and_return(File.dirname(__FILE__) + "/../assets")
+      @rake = Rake.application
+    end
   end
 
   describe "db:create" do

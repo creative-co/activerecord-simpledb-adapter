@@ -11,3 +11,6 @@ require 'active_record/connection_adapters/simpledb_adapter/validations'
 require 'active_record/connection_adapters/simpledb_adapter/table_definition'
 require 'active_record/connection_adapters/simpledb_adapter/column'
 require 'active_record/connection_adapters/simpledb_adapter/adapter'
+require 'active_record/connection_adapters/simpledb_adapter/defaults'
+
+ActiveRecord::Base.send :include, ActiveRecordSimpledbAdapter::Defaults

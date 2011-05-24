@@ -32,4 +32,5 @@ describe "SimpleDBAdapter ActiveRecord default values for attributes" do
     m.p5.should be_true
     m.p6.should be_nil
   end
+
 end
