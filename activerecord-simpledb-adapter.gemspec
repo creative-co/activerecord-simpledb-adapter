@@ -42,21 +42,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{ActiveRecord SimpleDB adapter}
-  s.test_files = [
-    "spec/active_record/batch_spec.rb",
-    "spec/active_record/connection_adapters/simpledb_adapter_spec.rb",
-    "spec/active_record/core_actions_spec.rb",
-    "spec/active_record/defaults_spec.rb",
-    "spec/active_record/locking_spec.rb",
-    "spec/active_record/offset_spec.rb",
-    "spec/active_record/record_attributes_spec.rb",
-    "spec/active_record/validates_spec.rb",
-    "spec/active_record/where_spec.rb",
-    "spec/assets/db/seeds.rb",
-    "spec/generators/model_spec.rb",
-    "spec/spec_helper.rb",
-    "spec/tasks/rake_spec.rb"
-  ]
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
@@ -66,7 +51,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<awesome_print>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
-      s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
+      s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
       s.add_development_dependency(%q<aws>, [">= 0"])
       s.add_development_dependency(%q<activerecord>, [">= 0"])
@@ -83,7 +68,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<awesome_print>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
-      s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
+      s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<rcov>, [">= 0"])
       s.add_dependency(%q<aws>, [">= 0"])
       s.add_dependency(%q<activerecord>, [">= 0"])
@@ -101,7 +86,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<awesome_print>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 2.3.0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
-    s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
+    s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<rcov>, [">= 0"])
     s.add_dependency(%q<aws>, [">= 0"])
     s.add_dependency(%q<activerecord>, [">= 0"])
