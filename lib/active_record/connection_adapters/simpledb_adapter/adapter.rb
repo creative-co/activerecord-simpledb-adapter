@@ -34,17 +34,9 @@ module ActiveRecord
 
       #========= QUOTING =====================
 
-      #dirty hack for removing all (') from value for hash table attrubutes
-      def hash_value_quote(value, column = nil)
-        return nil if value.nil?
-        quote(value, column).gsub /^'*|'*$/, ''
-      end
-
       def quote(value, column = nil)
-        if value.present? && column.present? && column.number?
-          "'#{column.quote_number value}'"
-        elsif value.nil?
-          "'#{nil_representation}'"
+        if value.nil?
+          quote(nil_representation, column)
         else
           super
         end
@@ -188,7 +180,7 @@ module ActiveRecord
               attrs.each {|k, vs|
                 column = columns[k]
                 if column.present?
-                  ritem[column.name] = column.unquote_number(vs.first)
+                  ritem[column.name] = column.unconvert(vs.first)
                 else
                   ritem[k] = vs.first
                 end

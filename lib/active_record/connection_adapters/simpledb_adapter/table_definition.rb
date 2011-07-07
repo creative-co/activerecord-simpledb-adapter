@@ -27,6 +27,13 @@ module ActiveRecord
         @columns_with_defaults ||= @columns.select { |column| column.default.present? }
       end
 
+      #for json type
+      def json(*args)
+        options = args.extract_options!                                       
+        column_names = args                                                   
+        column_names.each { |name| column(name, 'json', options) }  
+      end                                                                     
+
     end
   end
 end

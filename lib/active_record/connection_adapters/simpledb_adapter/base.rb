@@ -35,5 +35,10 @@ module ActiveRecord
       block.call
       connection.commit_batch
     end
+
+    #disable quoting for id
+    def quoted_id
+      id
+    end
   end
 end

@@ -4,10 +4,6 @@ module Arel
     class SimpleDB < Arel::Visitors::ToSql
       private
 
-      def hash_value_quote value, column = nil
-        @connection.hash_value_quote value, column
-      end
-
       def visit_Arel_Nodes_DeleteStatement o
         {
             :action => :delete,
@@ -54,8 +50,8 @@ module Arel
 
       def visit_Arel_Nodes_Values o
         result = {}
-        o.expressions.zip(o.columns).map {|value, column|
-          result[column.column.db_column_name] = hash_value_quote(value, column.column)
+        o.expressions.zip(o.columns).map {|v, c|
+          result[c.column.db_column_name] = c.column.convert(v)
         }
         result
       end
@@ -69,20 +65,17 @@ module Arel
       end
       
       def visit_Arel_Nodes_Assignment o
-        right = o.right ? hash_value_quote(o.right, o.left.column) : nil
+        right = o.right ? o.left.column.convert(o.right) : nil
         left = o.left.column.name
         {left => right}
       end
 
       def visit_Arel_Nodes_Equality o
-        right = o.right ? hash_value_quote(o.right, o.left.column) : nil
-        begin
+        right = o.right ? o.left.column.convert(o.right) : nil
         left = o.left.column.name
-        rescue
-          puts $!.backtrace
-        end
         {left => right}.tap { |m|
-          m.override_to_s "#{visit o.left} = #{quote(o.right, o.left.column)}"
+          value = o.left.column.convert(o.right)
+          m.override_to_s "#{visit o.left} = #{quote(value)}"
         }
       end
 
