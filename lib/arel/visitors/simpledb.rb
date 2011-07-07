@@ -95,7 +95,6 @@ module Arel
       alias :visit_Arel_Attributes_Boolean :visit_Arel_Attributes_Attribute
 
       def visit_Arel_Nodes_SqlLiteral o
-        puts o
         # Strip table name from table.column -like literals
         result = o.to_s.gsub(/('[^']*')|(^\s*|\s+)\w+\./, '\1\2')
         # quote column values
