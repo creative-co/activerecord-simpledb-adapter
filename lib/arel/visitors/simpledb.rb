@@ -85,7 +85,6 @@ module Arel
       
       def visit_Arel_Attributes_Attribute o
         # Do not use table. prefix for attribute names
-        @last_column = o.column
         quote_column_name o.column.db_column_name
       end
       alias :visit_Arel_Attributes_Integer :visit_Arel_Attributes_Attribute
@@ -96,8 +95,11 @@ module Arel
       alias :visit_Arel_Attributes_Boolean :visit_Arel_Attributes_Attribute
 
       def visit_Arel_Nodes_SqlLiteral o
+        puts o
         # Strip table name from table.column -like literals
-        result = o.to_s.gsub(/\w+\.([\w*]+)/, '\1')
+        result = o.to_s.gsub(/('[^']*')|(^\s*|\s+)\w+\./, '\1\2')
+        # quote column values
+        result = result.gsub(/('[^']*')|=\s*([^\s']+)/) { "#{$1}#{'= \'' + $2 + '\'' if $2.present?}" }
         if result.match /`(\w+)`\s*=\s*'(.*?)'/
           # transform 'a = b' to {'a' => 'b'}
           {$1 => $2}.tap {|m| m.override_to_s result}
