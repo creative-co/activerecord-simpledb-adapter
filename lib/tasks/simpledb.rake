@@ -30,7 +30,42 @@ namespace :db do
   end
 
   desc "Re-create the domain and initialize with the seed data"
-  task :setup => [:recreate, :seed]
+  task :setup => [:recreate, :import, :seed]
+
+  desc "Export collections from sdb to seeds.yml"
+  task :export, [:collections]=> :environment do |t, args|
+    collections = args[:collections].try(:split, ',')
+    data = ActiveSupport::OrderedHash.new
+    if collections
+      collections.each do |c|
+        data[c] = []
+        c.classify.constantize.all.each { |item| data[c] << item.attributes }
+      end
+      File.open(dump_file, "w") do |out|
+        YAML.dump(data, out)
+      end
+    else
+        log "Please put collections name as \"collections=<first>,<second>...\""
+    end
+  end
+
+  desc "Import collections from seeds.yml to sdb"
+  task :import => :environment do
+    if File.exists? dump_file
+      data = YAML.load_file(dump_file)
+      data.each_pair do |entity, values|
+        cls = entity.classify.constantize
+        cls.destroy_all
+
+        values.each { |val|
+          created_obj = cls.create! val
+        }
+      end
+      log "Data from seeds.yml file was pushed to domain"
+    else
+      log "File seeds.yml not found. Import skipped."
+    end
+  end
 
   namespace :collection do
     desc "Clear all data for collection by name"
@@ -64,5 +99,9 @@ namespace :db do
 
   def log text
     puts text
+  end
+
+  def dump_file
+    @dump_file ||= File.join(Rails.root, 'db', 'seeds.yml')
   end
 end

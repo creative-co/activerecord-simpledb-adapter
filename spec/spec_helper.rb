@@ -48,6 +48,8 @@ class Person < ActiveRecord::Base
     t.timestamps
   end
 
+  protected_attributes.delete('id')
+
   def self.valid_params
     {
         :login => "john",

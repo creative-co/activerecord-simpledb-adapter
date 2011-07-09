@@ -171,6 +171,7 @@ module ActiveRecord
             response = @connection.select(sql, nil, true)
           end
           collection_name = get_collection_column_and_name(sql)
+          collection_column_name = collection_column_name(collection_name)
           columns = columns_definition(collection_name)
 
           response[:items].each do |item|
@@ -178,11 +179,14 @@ module ActiveRecord
               ritem = {}
               ritem['id'] = id unless id == 'Domain' && attrs['Count'] # unless count(*) result
               attrs.each {|k, vs|
-                column = columns[k]
-                if column.present?
-                  ritem[column.name] = column.unconvert(vs.first)
-                else
-                  ritem[k] = vs.first
+                # skip collection column (detect collection)
+                if k != collection_column_name
+                  column = columns[k]
+                  if column.present?
+                    ritem[column.name] = column.unconvert(vs.first)
+                  else
+                    ritem[k] = vs.first
+                  end
                 end
               }
               result << ritem
