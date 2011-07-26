@@ -39,7 +39,7 @@ namespace :db do
     if collections
       collections.each do |c|
         data[c] = []
-        c.classify.constantize.all.each { |item| data[c] << item.attributes }
+        c.camelize.constantize.all.each { |item| data[c] << item.attributes }
       end
       File.open(dump_file, "w") do |out|
         YAML.dump(data, out)
@@ -54,7 +54,7 @@ namespace :db do
     if File.exists? dump_file
       data = YAML.load_file(dump_file)
       data.each_pair do |entity, values|
-        cls = entity.classify.constantize
+        cls = entity.camelize.constantize
         cls.destroy_all
 
         values.each { |val|
