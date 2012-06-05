@@ -20,7 +20,7 @@ module ActiveRecordSimpledbAdapter
 
           if has_default
             value = if column.default.is_a? Proc
-                      column.default.call(self)
+                      column.default.call
                     else
                       column.default
                     end
