@@ -18,8 +18,6 @@ require 'aws'
 require 'active_record'
 require 'active_record/connection_adapters/simpledb_adapter'
 require 'arel/visitors/simpledb'
-require 'ruby-debug'
-Debugger.start
 
 CONNECTION_PARAMS = {
     :adapter => 'simpledb',

@@ -9,20 +9,6 @@ rescue Bundler::BundlerError => e
 end
 require 'rake'
 
-require 'jeweler'
-Jeweler::Tasks.new do |gem|
-  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "activerecord-simpledb-adapter"
-  gem.homepage = "http://github.com/cloudcastle/activerecord-simpledb-adapter"
-  gem.license = "MIT"
-  gem.summary = %Q{ActiveRecord SimpleDB adapter}
-  gem.email = "ilia@flamefork.ru"
-  gem.authors = ["Ilia Ablamonov", "Alex Gorkunov", "Cloud Castle Inc."]
-
-  gem.files = FileList['lib/**/*.*', 'LICENSE.txt', 'README.md', 'activerecord-simpledb-adapter.gemspec', 'Gemfile', 'Gemfile.lock']
-end
-Jeweler::RubygemsDotOrgTasks.new
-
 require 'rspec/core'
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec) do |spec|
